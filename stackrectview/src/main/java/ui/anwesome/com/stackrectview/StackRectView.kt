@@ -94,6 +94,21 @@ class StackRectView(ctx:Context):View(ctx) {
             cb(j)
         }
     }
+    data class StackRectRenderer(var view:StackRectView,var time:Int = 0) {
+        var container:StackRectContainer?=null
+        fun render(canvas:Canvas,paint:Paint) {
+            if(time == 0) {
+                val w = canvas.width.toFloat()
+                val h = canvas.height.toFloat()
+                container = StackRectContainer(w,h)
+            }
+            container?.draw(canvas,paint)
+            time++
+        }
+        fun startUpdating() {
+
+        }
+    }
 }
 fun ConcurrentLinkedQueue<StackRectView.StackRect>.at(i:Int):StackRectView.StackRect? {
     var index = 0
