@@ -12,6 +12,10 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class StackRectView(ctx:Context):View(ctx) {
     val renderer = StackRectRenderer(this)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    var onRectMovementListener:OnRectMovementListener?=null
+    fun addRectMovementListener(onLeft: (Int) -> Unit, onRight: (Int) -> Unit) {
+        onRectMovementListener = OnRectMovementListener(onLeft,onRight)
+    }
     override fun onDraw(canvas:Canvas) {
         canvas.drawColor(Color.parseColor("#212121"))
         renderer.render(canvas,paint)
@@ -123,6 +127,10 @@ class StackRectView(ctx:Context):View(ctx) {
             animator.update{
                 container?.update{i,scale ->
                     animator.stop()
+                    when(scale) {
+                        0f -> view.onRectMovementListener?.onLeft?.invoke(i)
+                        1f -> view.onRectMovementListener?.onRight?.invoke(i)
+                    }
                 }
             }
         }
@@ -164,6 +172,7 @@ class StackRectView(ctx:Context):View(ctx) {
             return view
         }
     }
+    data class OnRectMovementListener(var onLeft:(Int)->Unit,var onRight:(Int)->Unit)
 }
 fun ConcurrentLinkedQueue<StackRectView.StackRect>.at(i:Int):StackRectView.StackRect? {
     var index = 0
