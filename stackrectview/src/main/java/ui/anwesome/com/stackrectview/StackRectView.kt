@@ -3,6 +3,7 @@ package ui.anwesome.com.stackrectview
 /**
  * Created by anweshmishra on 04/01/18.
  */
+import android.app.Activity
 import android.view.*
 import android.content.*
 import android.graphics.*
@@ -140,6 +141,13 @@ class StackRectView(ctx:Context):View(ctx) {
                 animated = true
                 view.postInvalidate()
             }
+        }
+    }
+    companion object {
+        fun create(activity:Activity):StackRectView {
+            val view = StackRectView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
