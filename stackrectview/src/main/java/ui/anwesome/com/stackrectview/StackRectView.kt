@@ -10,13 +10,15 @@ import android.graphics.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class StackRectView(ctx:Context):View(ctx) {
+    val renderer = StackRectRenderer(this)
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     override fun onDraw(canvas:Canvas) {
-
+        renderer.render(canvas,paint)
     }
     override fun onTouchEvent(event:MotionEvent):Boolean {
         when(event.action) {
             MotionEvent.ACTION_DOWN -> {
-
+                renderer.startUpdating()
             }
         }
         return true
