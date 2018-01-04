@@ -57,7 +57,7 @@ class StackRectView(ctx:Context):View(ctx) {
     }
     data class StackRectContainer(var w:Float,var h:Float,var n:Int = 5) {
         val stackRects:ConcurrentLinkedQueue<StackRect> = ConcurrentLinkedQueue()
-        val containerState = ContainerState()
+        val containerState = ContainerState(n)
         init {
             for(i in 0..n-1) {
                 stackRects.add(StackRect(i,Math.min(w,h)/10,w))
@@ -96,6 +96,7 @@ class StackRectView(ctx:Context):View(ctx) {
     }
     data class StackRectRenderer(var view:StackRectView,var time:Int = 0) {
         var container:StackRectContainer?=null
+        val animator = Animator(view)
         fun render(canvas:Canvas,paint:Paint) {
             if(time == 0) {
                 val w = canvas.width.toFloat()
@@ -104,9 +105,16 @@ class StackRectView(ctx:Context):View(ctx) {
             }
             container?.draw(canvas,paint)
             time++
+            animator.update{
+                container?.update{i,scale ->
+                    animator.stop()
+                }
+            }
         }
         fun startUpdating() {
-
+            container?.startUpdating {
+                animator.startUpdating()
+            }
         }
     }
     data class Animator(var view:StackRectView,var animated:Boolean = false) {
@@ -122,9 +130,13 @@ class StackRectView(ctx:Context):View(ctx) {
                 }
             }
         }
-        fun startUpdating(startcb:()->Unit) {
+        fun stop() {
+            if(animated) {
+                animated = false
+            }
+        }
+        fun startUpdating() {
             if(!animated) {
-                startcb()
                 animated = true
                 view.postInvalidate()
             }
