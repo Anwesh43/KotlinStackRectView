@@ -70,6 +70,16 @@ class StackRectView(ctx:Context):View(ctx) {
             stackRects.forEach {
                 it.draw(canvas,paint)
             }
+            containerState.executeFn { j ->
+                if(n > 0) {
+                    val scale = stackRects.at(j)?.state?.scale?:0f
+                    val gap = (0.9f*w)/n
+                    paint.strokeWidth = Math.min(w, h) / 40
+                    paint.strokeCap = Paint.Cap.ROUND
+                    paint.color = Color.parseColor("#00C853")
+                    canvas.drawLine(w/10,0.8f*h,w/10+gap*j+gap*scale,0.8f*h,paint)
+                }
+            }
         }
         fun update(stopcb:(Int,Float)->Unit) {
             containerState.executeFn {
