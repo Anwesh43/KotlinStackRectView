@@ -109,6 +109,27 @@ class StackRectView(ctx:Context):View(ctx) {
 
         }
     }
+    data class Animator(var view:StackRectView,var animated:Boolean = false) {
+        fun update(updatecb:()->Unit) {
+            if(animated) {
+                updatecb()
+                try {
+                    Thread.sleep(50)
+                    view.invalidate()
+                }
+                catch(ex:Exception) {
+
+                }
+            }
+        }
+        fun startUpdating(startcb:()->Unit) {
+            if(!animated) {
+                startcb()
+                animated = true
+                view.postInvalidate()
+            }
+        }
+    }
 }
 fun ConcurrentLinkedQueue<StackRectView.StackRect>.at(i:Int):StackRectView.StackRect? {
     var index = 0
