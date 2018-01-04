@@ -13,6 +13,7 @@ class StackRectView(ctx:Context):View(ctx) {
     val renderer = StackRectRenderer(this)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     override fun onDraw(canvas:Canvas) {
+        canvas.drawColor(Color.parseColor("#212121"))
         renderer.render(canvas,paint)
     }
     override fun onTouchEvent(event:MotionEvent):Boolean {
@@ -29,6 +30,7 @@ class StackRectView(ctx:Context):View(ctx) {
             x = -size+(destX+size)*state.scale
             canvas.save()
             canvas.translate(x,y)
+            paint.color = Color.parseColor("#311B92")
             canvas.drawRoundRect(RectF(0f,0f,size,size),size/10,size/10,paint)
             canvas.restore()
         }
