@@ -57,6 +57,7 @@ class StackRectView(ctx:Context):View(ctx) {
     }
     data class StackRectContainer(var w:Float,var h:Float,var n:Int = 5) {
         val stackRects:ConcurrentLinkedQueue<StackRect> = ConcurrentLinkedQueue()
+        val containerState = ContainerState()
         init {
             for(i in 0..n-1) {
                 stackRects.add(StackRect(i,Math.min(w,h)/10,w))
@@ -68,10 +69,17 @@ class StackRectView(ctx:Context):View(ctx) {
             }
         }
         fun update(stopcb:(Int,Float)->Unit) {
-
+            containerState.executeFn {
+                stackRects.at(it)?.update({i,scale ->
+                    containerState.increment()
+                    stopcb(i,scale)
+                })
+            }
         }
         fun startUpdating(startcb:()->Unit) {
-
+            containerState.executeFn {
+                stackRects.at(it)?.startUpdating(startcb)
+            }
         }
     }
     data class ContainerState(var n:Int,var j:Int = 0,var dir:Int = 1) {
@@ -86,4 +94,14 @@ class StackRectView(ctx:Context):View(ctx) {
             cb(j)
         }
     }
+}
+fun ConcurrentLinkedQueue<StackRectView.StackRect>.at(i:Int):StackRectView.StackRect? {
+    var index = 0
+    forEach {
+        if(index == i) {
+            return it
+        }
+        index++
+    }
+    return null
 }
