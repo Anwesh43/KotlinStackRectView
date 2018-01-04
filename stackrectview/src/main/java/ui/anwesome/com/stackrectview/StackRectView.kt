@@ -6,6 +6,8 @@ package ui.anwesome.com.stackrectview
 import android.view.*
 import android.content.*
 import android.graphics.*
+import java.util.concurrent.ConcurrentLinkedQueue
+
 class StackRectView(ctx:Context):View(ctx) {
     override fun onDraw(canvas:Canvas) {
 
@@ -27,8 +29,10 @@ class StackRectView(ctx:Context):View(ctx) {
             canvas.drawRoundRect(RectF(0f,0f,size,size),size/10,size/10,paint)
             canvas.restore()
         }
-        fun update(stopcb:(Float)->Unit) {
-            state.update(stopcb)
+        fun update(stopcb:(Int,Float)->Unit) {
+            state.update{
+                stopcb(i,it)
+            }
         }
         fun startUpdating(startcb:()->Unit) {
             state.startUpdating(startcb)
@@ -50,6 +54,24 @@ class StackRectView(ctx:Context):View(ctx) {
                 startcb()
             }
         }
+    }
+    data class StackRectContainer(var w:Float,var h:Float,var n:Int = 5) {
+        val stackRects:ConcurrentLinkedQueue<StackRect> = ConcurrentLinkedQueue()
+        init {
+            for(i in 0..n-1) {
+                stackRects.add(StackRect(i,Math.min(w,h)/10,w))
+            }
+        }
+        fun draw(canvas:Canvas,paint:Paint) {
+            stackRects.forEach {
+                it.draw(canvas,paint)
+            }
+        }
+        fun update(stopcb:(Int,Float)->Unit) {
 
+        }
+        fun startUpdating(startcb:()->Unit) {
+
+        }
     }
 }
